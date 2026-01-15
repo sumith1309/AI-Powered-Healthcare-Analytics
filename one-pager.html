@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedTech AI Performance Analysis | Executive One-Pager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- ECharts Library -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <!-- html2canvas for PDF generation -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0F172A;
+            --secondary: #0EA5E9;
+            --accent-green: #10B981;
+            --accent-purple: #8B5CF6;
+            --accent-orange: #F59E0B;
+            --accent-rose: #F43F5E;
+            --background: #FFFFFF;
+            --surface: #F8FAFC;
+            --border: #E2E8F0;
+            --text-dark: #0F172A;
+            --text-medium: #475569;
+            --text-light: #94A3B8;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text-dark);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .one-pager {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--background);
+        }
+
+        /* Download Actions Bar */
+        .download-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--surface), #EFF6FF);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .download-bar.hide-for-print {
+            display: none;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .download-btn-primary {
+            background: linear-gradient(135deg, var(--secondary), #22D3EE);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .download-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        .download-btn-secondary {
+            background: var(--background);
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+        }
+
+        .download-btn-secondary:hover {
+            background: var(--surface);
+            border-color: var(--secondary);
+        }
+
+        .download-btn-success {
+            background: linear-gradient(135deg, var(--accent-green), #34D399);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .download-btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .download-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .download-btn.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .download-btn .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--secondary), #22D3EE);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+        }
+
+        .header-title p {
+            font-size: 0.85rem;
+            color: var(--text-medium);
+            font-weight: 500;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-date {
+            font-size: 0.8rem;
+            color: var(--text-medium);
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            border-radius: 2px;
+        }
+
+        .about-section .section-title::before { background: var(--secondary); }
+        .models-section .section-title::before { background: var(--accent-green); }
+        .current-section .section-title::before { background: var(--accent-purple); }
+        .forecast-section .section-title::before { background: var(--accent-orange); }
+        .insights-section .section-title::before { background: var(--secondary); }
+        .attributes-section .section-title::before { background: var(--accent-green); }
+
+        /* About the Data */
+        .about-section {
+            grid-column: 1 / -1;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .about-item {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .about-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .about-label {
+            font-size: 0.75rem;
+            color: var(--text-medium);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        /* AI Models Section */
+        .models-section {
+            grid-column: 1 / -1;
+        }
+
+        .models-comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .model-card {
+            background: var(--background);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .model-card.v1 {
+            border-color: var(--secondary);
+        }
+
+        .model-card.v2 {
+            border-color: var(--accent-green);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02));
+        }
+
+        .model-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .model-card.v1 .model-name { color: var(--secondary); }
+        .model-card.v2 .model-name { color: var(--accent-green); }
+
+        .model-desc {
+            font-size: 0.8rem;
+            color: var(--text-medium);
+            margin-bottom: 1rem;
+        }
+
+        .model-stat {
+            font-size: 2rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .model-card.v1 .model-stat { color: var(--secondary); }
+        .model-card.v2 .model-stat { color: var(--accent-green); }
+
+        .model-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .vs-badge {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .winner-banner {
+            background: linear-gradient(135deg, var(--accent-green), #34D399);
+            color: #fff;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Chart Containers */
+        .chart-container {
+            width: 100%;
+            height: 220px;
+            border-radius: 8px;
+        }
+
+        /* KPI Mini Cards */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .kpi-mini {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-mini-label {
+            font-size: 0.75rem;
+            color: var(--text-medium);
+            font-weight: 600;
+        }
+
+        .kpi-mini-value {
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-green);
+        }
+
+        /* Insights Section */
+        .insights-section {
+            grid-column: 1 / -1;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .insight-card {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-left: 4px solid;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .insight-card:nth-child(1) { border-left-color: var(--secondary); }
+        .insight-card:nth-child(2) { border-left-color: var(--accent-green); }
+        .insight-card:nth-child(3) { border-left-color: var(--accent-orange); }
+        .insight-card:nth-child(4) { border-left-color: var(--accent-purple); }
+
+        .insight-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .insight-text {
+            font-size: 0.7rem;
+            color: var(--text-medium);
+            line-height: 1.4;
+        }
+
+        /* Attributes Section */
+        .attributes-section {
+            grid-column: 1 / -1;
+        }
+
+        .attributes-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.75rem;
+        }
+
+        .attribute-item {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .attribute-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .attribute-label {
+            font-size: 0.65rem;
+            color: var(--text-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-top: 0.25rem;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            font-size: 0.7rem;
+            color: var(--text-light);
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-stat {
+            text-align: center;
+        }
+
+        .footer-stat-value {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--accent-green);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .footer-stat-label {
+            font-size: 0.65rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .one-pager {
+                padding: 1.5rem;
+                max-width: 100%;
+            }
+
+            .section-card {
+                break-inside: avoid;
+            }
+
+            .download-bar {
+                display: none !important;
+            }
+
+            .chart-container {
+                height: 200px;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .models-comparison {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .vs-badge {
+                margin: 0 auto;
+            }
+
+            .insights-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .attributes-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .download-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 9999;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, var(--accent-green), #34D399);
+        }
+
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="one-pager" id="reportContent">
+        <!-- Download Actions Bar -->
+        <div class="download-bar" id="downloadBar">
+            <button class="download-btn download-btn-secondary" onclick="window.print()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                Print Report
+            </button>
+            <button class="download-btn download-btn-primary" onclick="downloadPDF()" id="pdfBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <polyline points="9 15 12 18 15 15"></polyline>
+                </svg>
+                Download PDF
+            </button>
+            <button class="download-btn download-btn-success" onclick="downloadSummary()" id="summaryBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download Summary
+            </button>
+        </div>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-icon">🏥</div>
+                <div class="header-title">
+                    <h1>MedTech AI Performance Analysis</h1>
+                    <p>Healthcare Intelligence Platform | Executive Summary</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-badge">📊 One-Pager Report</div>
+                <div class="header-date">Analysis Period: Jan 2024 - Dec 2024<br>Generated: January 2026</div>
+            </div>
+        </header>
+
+        <main class="main-grid">
+            <!-- About the Data -->
+            <section class="section-card about-section">
+                <h2 class="section-title">About the Data</h2>
+                <div class="about-grid">
+                    <div class="about-item">
+                        <div class="about-value">48</div>
+                        <div class="about-label">Total Records</div>
+                    </div>
+                    <div class="about-item">
+                        <div class="about-value">4</div>
+                        <div class="about-label">Departments</div>
+                    </div>
+                    <div class="about-item">
+                        <div class="about-value">12</div>
+                        <div class="about-label">Months Analyzed</div>
+                    </div>
+                    <div class="about-item">
+                        <div class="about-value">4</div>
+                        <div class="about-label">KPI Metrics</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Models Comparison -->
+            <section class="section-card models-section">
+                <h2 class="section-title">AI → Models</h2>
+                <div class="models-comparison">
+                    <div class="model-card v1">
+                        <div class="model-name">AI_v1</div>
+                        <div class="model-desc">First Generation Model</div>
+                        <div class="model-stat">+16.2%</div>
+                        <div class="model-stat-label">Avg. Improvement</div>
+                    </div>
+                    <div class="vs-badge">VS</div>
+                    <div class="model-card v2">
+                        <div class="winner-banner">🏆 Winner</div>
+                        <div class="model-name">AI_v2</div>
+                        <div class="model-desc">Improved Second Generation</div>
+                        <div class="model-stat">+23.4%</div>
+                        <div class="model-stat-label">Avg. Improvement</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Current Performance with ECharts -->
+            <section class="section-card current-section">
+                <h2 class="section-title">Current Performance</h2>
+                <div id="kpiComparisonChart" class="chart-container"></div>
+                <div class="kpi-row">
+                    <div class="kpi-mini">
+                        <span class="kpi-mini-label">Accuracy</span>
+                        <span class="kpi-mini-value">+15.5%</span>
+                    </div>
+                    <div class="kpi-mini">
+                        <span class="kpi-mini-label">Turnaround</span>
+                        <span class="kpi-mini-value">+32.1%</span>
+                    </div>
+                    <div class="kpi-mini">
+                        <span class="kpi-mini-label">Cost Savings</span>
+                        <span class="kpi-mini-value">+23.2%</span>
+                    </div>
+                    <div class="kpi-mini">
+                        <span class="kpi-mini-label">Satisfaction</span>
+                        <span class="kpi-mini-value">+22.8%</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Next 6 Months Forecast with ECharts -->
+            <section class="section-card forecast-section">
+                <h2 class="section-title">Next Six Months Forecast</h2>
+                <div id="forecastChart" class="chart-container"></div>
+                <div class="kpi-row">
+                    <div class="kpi-mini">
+                        <span class="kpi-mini-label">Radiology</span>
+                        <span class="kpi-mini-value">0.883</span>
+                    </div>
+                    <div class="kpi-mini">
+                        <span class="kpi-mini-label">Pathology</span>
+                        <span class="kpi-mini-value">0.912</span>
+                    </div>
+                    <div class="kpi-mini">
+                        <span class="kpi-mini-label">Cardiology</span>
+                        <span class="kpi-mini-value">0.931</span>
+                    </div>
+                    <div class="kpi-mini">
+                        <span class="kpi-mini-label">Operations</span>
+                        <span class="kpi-mini-value">0.985</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Insights -->
+            <section class="section-card insights-section">
+                <h2 class="section-title">Key Insights</h2>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <div class="insight-icon">📊</div>
+                        <div class="insight-title">Enhanced Accuracy</div>
+                        <div class="insight-text">AI_v2 achieves 15.5% accuracy improvement vs 9.8% for AI_v1, showing 58% better performance.</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon">⏱️</div>
+                        <div class="insight-title">Faster Processing</div>
+                        <div class="insight-text">Turnaround reduced by 32.1% with AI_v2, enabling faster patient care delivery.</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon">💰</div>
+                        <div class="insight-title">Cost Efficiency</div>
+                        <div class="insight-text">AI_v2 saves 23.2% in operational costs through better resource utilization.</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon">📈</div>
+                        <div class="insight-title">Forecast Trend</div>
+                        <div class="insight-text">Operations shows strongest trend (+0.68%/month, R²=0.47). Monitor for ceiling effects.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Attributes -->
+            <section class="section-card attributes-section">
+                <h2 class="section-title">Dataset Attributes</h2>
+                <div class="attributes-grid">
+                    <div class="attribute-item">
+                        <div class="attribute-value">Radiology</div>
+                        <div class="attribute-label">Department 1</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">Pathology</div>
+                        <div class="attribute-label">Department 2</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">Cardiology</div>
+                        <div class="attribute-label">Department 3</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">Operations</div>
+                        <div class="attribute-label">Department 4</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">Accuracy</div>
+                        <div class="attribute-label">KPI Metric</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">Turnaround</div>
+                        <div class="attribute-label">KPI Metric</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">Cost</div>
+                        <div class="attribute-label">KPI Metric</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">Satisfaction</div>
+                        <div class="attribute-label">KPI Metric</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">Baseline</div>
+                        <div class="attribute-label">Model Type</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">AI_v1</div>
+                        <div class="attribute-label">Model Type</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">AI_v2</div>
+                        <div class="attribute-label">Model Type</div>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-value">Linear</div>
+                        <div class="attribute-label">Forecast Model</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-left">
+                <strong>MedTech AI Analytics Platform</strong><br>
+                Healthcare Intelligence | Prepared for Executive Review<br>
+                Confidential - Internal Use Only
+            </div>
+            <div class="footer-right">
+                <div class="footer-stat">
+                    <div class="footer-stat-value">AI_v2</div>
+                    <div class="footer-stat-label">Recommended</div>
+                </div>
+                <div class="footer-stat">
+                    <div class="footer-stat-value">+44.4%</div>
+                    <div class="footer-stat-label">Better Than v1</div>
+                </div>
+                <div class="footer-stat">
+                    <div class="footer-stat-value">6 mo</div>
+                    <div class="footer-stat-label">Forecast Period</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✓</span>
+        <span class="toast-message">Download complete!</span>
+    </div>
+
+    <script>
+        // ====================================
+        // CHART DATA
+        // ====================================
+        const chartData = {
+            departments: ['Radiology', 'Pathology', 'Cardiology', 'Operations'],
+            kpis: ['Accuracy', 'Turnaround', 'Cost', 'Satisfaction'],
+            months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            forecastMonths: ['Jan 25', 'Feb 25', 'Mar 25', 'Apr 25', 'May 25', 'Jun 25'],
+            v1Data: {
+                accuracy: [9.6, 10.4, 10.4, 8.8],
+                turnaround: [24.2, 22.7, 20.8, 20.0],
+                cost: [17.7, 20.3, 17.0, 15.8],
+                satisfaction: [15.6, 15.2, 14.6, 16.2]
+            },
+            v2Data: {
+                accuracy: [15.0, 15.8, 15.7, 15.7],
+                turnaround: [32.1, 32.8, 29.8, 33.8],
+                cost: [25.1, 22.6, 21.7, 23.4],
+                satisfaction: [22.2, 24.1, 21.7, 23.0]
+            },
+            historicalAccuracy: {
+                radiology: [0.86, 0.88, 0.87, 0.89, 0.88, 0.90, 0.89, 0.91, 0.88, 0.90, 0.89, 0.88],
+                pathology: [0.90, 0.92, 0.88, 0.91, 0.89, 0.93, 0.90, 0.88, 0.92, 0.91, 0.90, 0.91],
+                cardiology: [0.88, 0.87, 0.90, 0.89, 0.91, 0.88, 0.92, 0.90, 0.93, 0.91, 0.89, 0.92],
+                operations: [0.83, 0.85, 0.87, 0.88, 0.89, 0.90, 0.91, 0.92, 0.93, 0.94, 0.95, 0.95]
+            },
+            forecastAccuracy: {
+                radiology: [0.888, 0.887, 0.886, 0.885, 0.884, 0.883],
+                pathology: [0.910, 0.911, 0.911, 0.912, 0.912, 0.912],
+                cardiology: [0.918, 0.920, 0.923, 0.926, 0.928, 0.931],
+                operations: [0.951, 0.958, 0.965, 0.972, 0.979, 0.985]
+            }
+        };
+
+        const colors = {
+            v1: '#0EA5E9',
+            v2: '#10B981',
+            radiology: '#6366F1',
+            pathology: '#EC4899',
+            cardiology: '#F43F5E',
+            operations: '#0EA5E9'
+        };
+
+        // ====================================
+        // INITIALIZE ECHARTS
+        // ====================================
+        let charts = {};
+
+        function initCharts() {
+            initKPIComparisonChart();
+            initForecastChart();
+        }
+
+        // KPI Comparison Bar Chart
+        function initKPIComparisonChart() {
+            const chartEl = document.getElementById('kpiComparisonChart');
+            if (!chartEl) return;
+
+            const chart = echarts.init(chartEl);
+            charts.kpiComparison = chart;
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    textStyle: { color: '#fff', fontSize: 11 },
+                    formatter: function(params) {
+                        let result = `<strong>${params[0].name}</strong><br/>`;
+                        params.forEach(p => {
+                            result += `${p.marker} ${p.seriesName}: <strong>+${p.value}%</strong><br/>`;
+                        });
+                        return result;
+                    }
+                },
+                legend: {
+                    data: ['AI_v1', 'AI_v2'],
+                    bottom: 0,
+                    textStyle: { color: '#64748B', fontSize: 10 },
+                    itemWidth: 12,
+                    itemHeight: 12
+                },
+                grid: { 
+                    left: '3%', 
+                    right: '4%', 
+                    bottom: '18%', 
+                    top: '8%', 
+                    containLabel: true 
+                },
+                xAxis: {
+                    type: 'category',
+                    data: chartData.kpis,
+                    axisLine: { lineStyle: { color: '#E2E8F0' } },
+                    axisLabel: { color: '#64748B', fontSize: 10 },
+                    axisTick: { show: false }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Improvement (%)',
+                    nameTextStyle: { color: '#64748B', fontSize: 9 },
+                    axisLine: { show: false },
+                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+                    axisLabel: { color: '#64748B', fontSize: 9 }
+                },
+                series: [
+                    {
+                        name: 'AI_v1',
+                        type: 'bar',
+                        barWidth: '30%',
+                        data: [9.8, 22.0, 17.7, 15.4],
+                        itemStyle: { 
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#38BDF8' },
+                                { offset: 1, color: '#0EA5E9' }
+                            ]),
+                            borderRadius: [4, 4, 0, 0]
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: '#7DD3FC' },
+                                    { offset: 1, color: '#38BDF8' }
+                                ])
+                            }
+                        }
+                    },
+                    {
+                        name: 'AI_v2',
+                        type: 'bar',
+                        barWidth: '30%',
+                        data: [15.5, 32.1, 23.2, 22.8],
+                        itemStyle: { 
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#34D399' },
+                                { offset: 1, color: '#10B981' }
+                            ]),
+                            borderRadius: [4, 4, 0, 0]
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: '#6EE7B7' },
+                                    { offset: 1, color: '#34D399' }
+                                ])
+                            }
+                        },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '+{c}%',
+                            fontSize: 9,
+                            fontWeight: 600,
+                            color: '#10B981'
+                        }
+                    }
+                ],
+                animationDuration: 1200,
+                animationEasing: 'elasticOut'
+            };
+            chart.setOption(option);
+        }
+
+        // Forecast Multi-Line Chart
+        function initForecastChart() {
+            const chartEl = document.getElementById('forecastChart');
+            if (!chartEl) return;
+
+            const chart = echarts.init(chartEl);
+            charts.forecast = chart;
+
+            const allMonths = [...chartData.months.slice(-6), ...chartData.forecastMonths];
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    textStyle: { color: '#fff', fontSize: 10 },
+                    formatter: function(params) {
+                        let result = `<strong>${params[0].name}</strong><br/>`;
+                        params.forEach(p => {
+                            if (p.value !== null && p.value !== undefined) {
+                                result += `${p.marker} ${p.seriesName}: <strong>${p.value.toFixed(3)}</strong><br/>`;
+                            }
+                        });
+                        return result;
+                    }
+                },
+                legend: {
+                    data: ['Radiology', 'Pathology', 'Cardiology', 'Operations'],
+                    bottom: 0,
+                    textStyle: { color: '#64748B', fontSize: 9 },
+                    itemWidth: 10,
+                    itemHeight: 10
+                },
+                grid: { 
+                    left: '3%', 
+                    right: '4%', 
+                    bottom: '20%', 
+                    top: '10%', 
+                    containLabel: true 
+                },
+                xAxis: {
+                    type: 'category',
+                    data: allMonths,
+                    axisLine: { lineStyle: { color: '#E2E8F0' } },
+                    axisLabel: { color: '#64748B', fontSize: 9, rotate: 30 },
+                    axisTick: { show: false }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 0.82,
+                    max: 1.0,
+                    axisLine: { show: false },
+                    splitLine: { lineStyle: { color: '#E2E8F0', type: 'dashed' } },
+                    axisLabel: { 
+                        color: '#64748B', 
+                        fontSize: 9,
+                        formatter: (v) => v.toFixed(2)
+                    }
+                },
+                series: [
+                    {
+                        name: 'Radiology',
+                        type: 'line',
+                        data: [...chartData.historicalAccuracy.radiology.slice(-6), ...chartData.forecastAccuracy.radiology],
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 5,
+                        lineStyle: { color: colors.radiology, width: 2 },
+                        itemStyle: { color: colors.radiology },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: colors.radiology + '30' },
+                                { offset: 1, color: colors.radiology + '05' }
+                            ])
+                        }
+                    },
+                    {
+                        name: 'Pathology',
+                        type: 'line',
+                        data: [...chartData.historicalAccuracy.pathology.slice(-6), ...chartData.forecastAccuracy.pathology],
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 5,
+                        lineStyle: { color: colors.pathology, width: 2 },
+                        itemStyle: { color: colors.pathology }
+                    },
+                    {
+                        name: 'Cardiology',
+                        type: 'line',
+                        data: [...chartData.historicalAccuracy.cardiology.slice(-6), ...chartData.forecastAccuracy.cardiology],
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 5,
+                        lineStyle: { color: colors.cardiology, width: 2 },
+                        itemStyle: { color: colors.cardiology }
+                    },
+                    {
+                        name: 'Operations',
+                        type: 'line',
+                        data: [...chartData.historicalAccuracy.operations.slice(-6), ...chartData.forecastAccuracy.operations],
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 5,
+                        lineStyle: { color: colors.operations, width: 2 },
+                        itemStyle: { color: colors.operations },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: colors.operations + '30' },
+                                { offset: 1, color: colors.operations + '05' }
+                            ])
+                        }
+                    }
+                ],
+                animationDuration: 1500,
+                animationEasing: 'cubicOut'
+            };
+
+            // Add visual separator line for forecast region
+            option.series.push({
+                type: 'line',
+                markLine: {
+                    silent: true,
+                    symbol: 'none',
+                    lineStyle: { color: '#94A3B8', type: 'dashed', width: 1 },
+                    data: [{ xAxis: 5, label: { show: true, position: 'end', formatter: 'Forecast →', fontSize: 8, color: '#94A3B8' } }]
+                }
+            });
+
+            chart.setOption(option);
+        }
+
+        // ====================================
+        // DOWNLOAD FUNCTIONS
+        // ====================================
+        
+        // Download PDF
+        async function downloadPDF() {
+            const btn = document.getElementById('pdfBtn');
+            const originalContent = btn.innerHTML;
+            
+            // Show loading state
+            btn.innerHTML = '<span class="spinner"></span> Generating...';
+            btn.classList.add('loading');
+
+            try {
+                // Hide download bar temporarily
+                const downloadBar = document.getElementById('downloadBar');
+                downloadBar.style.display = 'none';
+
+                const element = document.getElementById('reportContent');
+                
+                // Use html2canvas to capture the content
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+
+                // Restore download bar
+                downloadBar.style.display = 'flex';
+
+                // Calculate PDF dimensions (A4 size)
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                let heightLeft = imgHeight;
+                let position = 0;
+                
+                // Add first page
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                
+                // Add additional pages if needed
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                // Download
+                pdf.save('MedTech_AI_Executive_Report.pdf');
+                showToast('PDF downloaded successfully!', 'success');
+
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                showToast('Error generating PDF. Please try Print instead.', 'error');
+            } finally {
+                btn.innerHTML = originalContent;
+                btn.classList.remove('loading');
+            }
+        }
+
+        // Download Text Summary
+        function downloadSummary() {
+            const btn = document.getElementById('summaryBtn');
+            const originalContent = btn.innerHTML;
+            
+            btn.innerHTML = '<span class="spinner"></span> Generating...';
+            btn.classList.add('loading');
+
+            setTimeout(() => {
+                const summary = generateTextSummary();
+                downloadTextFile(summary, 'MedTech_AI_Executive_Summary.txt');
+                
+                btn.innerHTML = originalContent;
+                btn.classList.remove('loading');
+                showToast('Summary downloaded successfully!', 'success');
+            }, 500);
+        }
+
+        function generateTextSummary() {
+            const date = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            return `
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    MEDTECH AI PERFORMANCE ANALYSIS                           ║
+║                         EXECUTIVE SUMMARY REPORT                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Generated: ${date}
+Analysis Period: January 2024 - December 2024
+Report Type: One-Pager Executive Summary
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 DATA OVERVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Total Records Analyzed: 48
+• Departments Covered: 4 (Radiology, Pathology, Cardiology, Operations)
+• Months Analyzed: 12
+• KPI Metrics Tracked: 4 (Accuracy, Turnaround, Cost, Satisfaction)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🤖 AI MODEL COMPARISON
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌─────────────────┬──────────────────┬──────────────────┬────────────────────┐
+│     METRIC      │      AI_v1       │      AI_v2       │   IMPROVEMENT      │
+├─────────────────┼──────────────────┼──────────────────┼────────────────────┤
+│ Accuracy        │     +9.8%        │    +15.5%        │   +58% better      │
+│ Turnaround      │    +22.0%        │    +32.1%        │   +46% better      │
+│ Cost Savings    │    +17.7%        │    +23.2%        │   +31% better      │
+│ Satisfaction    │    +15.4%        │    +22.8%        │   +48% better      │
+├─────────────────┼──────────────────┼──────────────────┼────────────────────┤
+│ AVERAGE         │    +16.2%        │    +23.4%        │   +44.4% better    │
+└─────────────────┴──────────────────┴──────────────────┴────────────────────┘
+
+🏆 WINNER: AI_v2 (Second Generation Model)
+   → Outperforms AI_v1 across ALL metrics
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📈 6-MONTH FORECAST (January - June 2025)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Predicted Accuracy Scores by June 2025:
+• Radiology:   0.883 (slight decline expected due to ceiling effects)
+• Pathology:   0.912 (stable with minor improvement)
+• Cardiology:  0.931 (steady positive trend)
+• Operations:  0.985 (strongest growth trajectory)
+
+Forecast Reliability:
+• Operations shows strongest trend: +0.68%/month (R² = 0.47)
+• Linear regression models used for projections
+• Monitor for ceiling effects at higher accuracy levels
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 KEY INSIGHTS & RECOMMENDATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ENHANCED ACCURACY
+   AI_v2 achieves 15.5% accuracy improvement vs 9.8% for AI_v1,
+   indicating enhanced machine learning algorithms and better training data.
+
+2. FASTER PROCESSING
+   Turnaround time reduced by 32.1% with AI_v2, enabling faster
+   patient care delivery and improved operational efficiency.
+
+3. COST EFFICIENCY
+   AI_v2 saves 23.2% in operational costs through better resource
+   utilization and reduced manual intervention requirements.
+
+4. RECOMMENDATION
+   → Deploy AI_v2 across ALL departments immediately
+   → Priority focus: Radiology and Pathology (highest improvement potential)
+   → Continue monitoring Operations for ceiling effects
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 TECHNICAL SPECIFICATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Departments: Radiology, Pathology, Cardiology, Operations
+KPI Metrics: Accuracy, Turnaround Time, Cost Efficiency, Patient Satisfaction
+Model Types: Baseline, AI_v1, AI_v2
+Forecast Model: Linear Regression
+Forecast Period: 6 Months (Jan-Jun 2025)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+                    ═══════════════════════════════════════
+                        MedTech AI Analytics Platform
+                         Healthcare Intelligence Division
+                           Confidential - Internal Use
+                    ═══════════════════════════════════════
+`;
+        }
+
+        function downloadTextFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = toast.querySelector('.toast-message');
+            const toastIcon = toast.querySelector('.toast-icon');
+            
+            toastMessage.textContent = message;
+            toastIcon.textContent = type === 'success' ? '✓' : '✗';
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ====================================
+        // HANDLE RESIZE
+        // ====================================
+        window.addEventListener('resize', () => {
+            Object.values(charts).forEach(chart => {
+                if (chart && chart.resize) chart.resize();
+            });
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+        });
+
+        // Also try to init after a short delay (for iframe loading)
+        setTimeout(initCharts, 100);
+    </script>
+</body>
+</html>
